@@ -7,14 +7,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: ls -l
-  install_node:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '14'
-      - run: npm install -g bats
-  check-bats-version:
-    runs-on: ubuntu-latest
-    steps: 
-      - run: bats -v
+      # Checking for docker version
+      - run: docker version
