@@ -7,6 +7,8 @@ jobs:
     steps:
       - name: Checkout of Code
         uses: actions/checkout@v3
+      
+      - name: Checking the code Checkout
         run: ls -l
 
       # Checking for docker version
