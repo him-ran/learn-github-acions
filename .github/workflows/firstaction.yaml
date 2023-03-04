@@ -5,9 +5,22 @@ jobs:
   code-checkout:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: ls -l
+      - name: Checkout of Code
+        uses: actions/checkout@v3
+        run: ls -l
+
       # Checking for docker version
       - run: docker version
+
       # Building the docker image
       - run: docker build -t custom_nginx:0.1 .
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        with:
+          username: ${{ secrets.DOCKERHUB_PASSWORD }}
+          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+
+      # Logging in the dockerhub env
+      - name: Dockerlogin traditional way
+        run: docker login -u ${{ secrets.DOCKERHUBUSERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
