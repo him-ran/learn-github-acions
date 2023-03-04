@@ -9,3 +9,5 @@ jobs:
       - run: ls -l
       # Checking for docker version
       - run: docker version
+      # Building the docker image
+      - run: docker build -t custom_nginx:0.1 .
