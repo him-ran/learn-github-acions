@@ -42,6 +42,8 @@ jobs:
             HOSTNAME : ${{ secrets.AWS_EC2_HOSTNAME  }}
             USER_NAME : ${{ secrets.AWS_EC2_USER  }}
         run: |
+          echo ${USER_NAME}
+          echo ${HOSTNAME}
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
           ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
           
