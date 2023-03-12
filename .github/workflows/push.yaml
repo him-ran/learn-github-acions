@@ -2,7 +2,7 @@ name: learn-github-actions
 #run-name: ${{ github.commit }} is learning GitHub Actions
 on: [push]
 jobs:
-  code-checkout:
+  Checkout_And_Build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout of Code
@@ -35,3 +35,30 @@ jobs:
       - name: Docker push
         run: docker push mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
         if: ${{ github.ref_name == 'main' }}
+      
+  AWS_Deploy:
+    needs: Checkout_And_Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout of Code
+        uses: actions/checkout@v3
+        if: ${{ github.ref_name == 'main' }}
+
+      - name: Checking AWS EC2 Connectivity
+        if: ${{ github.ref_name == 'main' }}
+        env:
+            PRIVATE_KEY: ${{ secrets.AWS_KEY  }}
+            HOSTNAME : ${{ secrets.AWS_EC2_HOSTNAME  }}
+            USER_NAME : ${{ secrets.AWS_EC2_USER  }}
+            dockerUsername : ${{ secrets.DOCKERHUBUSERNAME }}
+            dockerpassword : ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+          
+            #Now we have got the access of EC2 and we will start the deploy .
+            ls -l /home/ec2-user/ && whoami
+            docker login -u ${dockerUsername} -p ${dockerpassword}
+            docker pull mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
+            docker run -d -p 8080:80 mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
+          '
