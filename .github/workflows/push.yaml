@@ -2,7 +2,7 @@ name: learn-github-actions
 #run-name: ${{ github.commit }} is learning GitHub Actions
 on: [push]
 jobs:
-  Checkout And Build:
+  Checkout_And_Build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout of Code
@@ -36,7 +36,7 @@ jobs:
         run: docker push mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
         if: ${{ github.ref_name == 'main' }}
       
-  AWS Deploy:
+  AWS_Deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout of Code
