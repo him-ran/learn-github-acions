@@ -45,7 +45,7 @@ jobs:
           echo ${USER_NAME}
           echo ${HOSTNAME}
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@ip-172-31-45-176 '
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${AWS_EC2_HOSTNAME} '
           
             #Now we have got the access of EC2 and we will start the deploy .
             ls -l /home/ec2-user/ &&
