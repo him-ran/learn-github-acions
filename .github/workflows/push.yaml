@@ -37,6 +37,7 @@ jobs:
         if: ${{ github.ref_name == 'main' }}
       
   AWS_Deploy:
+    needs: Checkout_And_Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout of Code
