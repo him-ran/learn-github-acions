@@ -71,3 +71,7 @@ jobs:
           unzip awscliv2.zip
       - name: Checking AWS CLi version
         run: aws --version
+      - name: Launch AWS Instance
+        run: |
+          aws ec2 run-instances --image-id ami-0d81306eddc614a45 --count 1 --instance-type t2.micro --key-name consoleEC2 --security-group-ids sg-020c065b4105a87ac --subnet-id subnet-06c57a2c4fcd3e53d
+
