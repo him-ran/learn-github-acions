@@ -2,63 +2,73 @@ name: learn-github-actions
 #run-name: ${{ github.commit }} is learning GitHub Actions
 on: [push]
 jobs:
-  Checkout_And_Build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout of Code
-        uses: actions/checkout@v3
+  # Checkout_And_Build:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout of Code
+  #       uses: actions/checkout@v3
       
-      - name: Checking the code Checkout
-        run: ls -l
+  #     - name: Checking the code Checkout
+  #       run: ls -l
 
-      # Checking for docker version
-      - run: docker version
+  #     # Checking for docker version
+  #     - run: docker version
 
-      # Building the docker image
-      - name: Build Docker Image
-        run: docker build -t custom_nginx:0.1 .
+  #     # Building the docker image
+  #     - name: Build Docker Image
+  #       run: docker build -t custom_nginx:0.1 .
 
-      - name: Log in to Docker Hub
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
-        with:
-          username: ${{ secrets.DOCKERHUBUSERNAME }}
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
+  #     - name: Log in to Docker Hub
+  #       uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+  #       with:
+  #         username: ${{ secrets.DOCKERHUBUSERNAME }}
+  #         password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      # Logging in the dockerhub env
-      - name: Dockerlogin traditional way
-        run: docker login -u ${{ secrets.DOCKERHUBUSERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
+  #     # Logging in the dockerhub env
+  #     - name: Dockerlogin traditional way
+  #       run: docker login -u ${{ secrets.DOCKERHUBUSERNAME }} -p ${{ secrets.DOCKERHUB_PASSWORD }}
 
-      - name: Docker tagging for the repo
-        run: docker tag custom_nginx:0.1 mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
-        if: ${{ github.ref_name == 'main' }}
+  #     - name: Docker tagging for the repo
+  #       run: docker tag custom_nginx:0.1 mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
+  #       if: ${{ github.ref_name == 'main' }}
 
-      - name: Docker push
-        run: docker push mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
-        if: ${{ github.ref_name == 'main' }}
+  #     - name: Docker push
+  #       run: docker push mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
+  #       if: ${{ github.ref_name == 'main' }}
       
-  AWS_Deploy:
-    needs: Checkout_And_Build
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout of Code
-        uses: actions/checkout@v3
-        if: ${{ github.ref_name == 'main' }}
+  # AWS_Deploy:
+  #   needs: Checkout_And_Build
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout of Code
+  #       uses: actions/checkout@v3
+  #       if: ${{ github.ref_name == 'main' }}
 
-      - name: Checking AWS EC2 Connectivity
-        if: ${{ github.ref_name == 'main' }}
-        env:
-            PRIVATE_KEY: ${{ secrets.AWS_KEY  }}
-            HOSTNAME : ${{ secrets.AWS_EC2_HOSTNAME  }}
-            USER_NAME : ${{ secrets.AWS_EC2_USER  }}
-            dockerUsername : ${{ secrets.DOCKERHUBUSERNAME }}
-            dockerpassword : ${{ secrets.DOCKERHUB_PASSWORD }}
-        run: |
-          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
-          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+  #     - name: Checking AWS EC2 Connectivity
+  #       if: ${{ github.ref_name == 'main' }}
+  #       env:
+  #           PRIVATE_KEY: ${{ secrets.AWS_KEY  }}
+  #           HOSTNAME : ${{ secrets.AWS_EC2_HOSTNAME  }}
+  #           USER_NAME : ${{ secrets.AWS_EC2_USER  }}
+  #           dockerUsername : ${{ secrets.DOCKERHUBUSERNAME }}
+  #           dockerpassword : ${{ secrets.DOCKERHUB_PASSWORD }}
+  #       run: |
+  #         echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+  #         ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
           
-            #Now we have got the access of EC2 and we will start the deploy .
-            ls -l /home/ec2-user/ && whoami
-            docker login -u ${dockerUsername} -p ${dockerpassword}
-            docker pull mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
-            docker run -d -p 8080:80 mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
-          '
+  #           #Now we have got the access of EC2 and we will start the deploy .
+  #           ls -l /home/ec2-user/ && whoami
+  #           docker login -u ${dockerUsername} -p ${dockerpassword}
+  #           docker pull mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
+  #           docker run -d -p 8080:80 mutemath966/demorepo:${{ github.ref_name }}_${{ github.sha }}
+  
+  AWS_CLi_Installation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dowloading AWS CLI zip
+        run: |
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          ./aws/install
+      - name: Checking AWS CLi version
+        run: aws --version
